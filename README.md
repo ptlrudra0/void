@@ -1,5 +1,7 @@
-# Void - web version
+# Void - phishing URL detector
 
-Web page for the Void phishing shield popup. `popup.js` is the original extension code, unchanged. `index.html` is the original `popup.html` with only the fixed 350px width replaced by a responsive width.
+Six models (Logistic Regression, Decision Tree, Random Forest, linear SVM, XGBoost, small neural net) trained on URL features only, exported to JavaScript and run in the browser.
+
+Data: PhishTank verified phishing URLs + legitimate links crawled from Tranco top-site homepages. Results are shown on the page.
 
 Authors: Rudra Hemantkumar Patel & Jalaj Jay Mehta (Department of AI & ML, CSPIT, CHARUSAT)
