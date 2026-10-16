@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="theme-color" content="#0f172a">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Void</title>
+  <style>
+    body { max-width: 420px; margin: 0 auto; padding: 16px; font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif; background: #0f172a; color: #f8fafc; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 12px; margin-bottom: 12px; }
+    input { width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; margin-bottom: 8px; font-size: 12px; }
+    button { width: 100%; padding: 8px; border-radius: 8px; border: none; background: #2563eb; color: #fff; font-weight: 600; cursor: pointer; }
+    .row { display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; border-bottom: 1px solid #334155; }
+  </style>
+</head>
+<body>
+  <h3 style="margin:0 0 10px 0;font-size:15px;">Void</h3>
+  <div class="card">
+    <input id="url-input" type="text" placeholder="Paste or inspect URL..." />
+    <button id="scan-btn">Scan with 6 Models + Kev-0.8B</button>
+  </div>
+  <div id="result-box" class="card"></div>
+  <script src="popup.js"></script>
+</body>
+</html>
