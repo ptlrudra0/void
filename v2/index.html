@@ -62,6 +62,16 @@ table{width:100%;border-collapse:collapse;font-size:13.5px}th,td{padding:9px 4px
 .notes b{color:#fff}
 footer{padding:28px 20px 48px;text-align:center;font-size:13px;color:#666}
 @media(min-width:760px){.row-in{flex-direction:row}.row-in input{flex:1}.row-in button{width:200px}.stats{grid-template-columns:repeat(4,1fr)}.hero{padding:26px 44px 40px}}
+
+input#url{font-size:17px!important;min-height:52px}.go,.cta,.chip,.chips button{min-height:48px}
+.chips button,.chip{font-size:14px!important;padding:12px 14px!important}
+.vsub{font-size:16px!important;opacity:1!important}.mrow{font-size:16px!important;padding:11px 0!important}
+.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{font-size:15px!important;min-width:460px}th{font-size:14px;color:#222}td,th{padding:12px 8px!important}
+.cap{font-size:15px!important;color:#333!important}.lead{color:#333!important}.tile small{font-size:15px!important;opacity:1!important}
+.notes li{font-size:16px!important}html,body{overflow-x:hidden}
+.how{background:#fff;border-radius:18px;padding:16px 18px;margin:0 0 16px;font-size:16px;line-height:1.5;color:#111}
+.how b{font-weight:800}.best{font-size:16px;font-weight:700;margin:0 4px 12px;color:#111}
 </style>
 </head>
 <body>
@@ -78,6 +88,7 @@ footer{padding:28px 20px 48px;text-align:center;font-size:13px;color:#666}
 <section id="scan">
  <h2>Paste a link.<br>Get a verdict.</h2>
  <p class="lead">Six machine-learning models read the link itself and vote. Everything runs in your browser, nothing is sent anywhere.</p>
+ <div class="how"><b>How it works:</b> paste a link. Six models score it from its text only (length, dots, symbols, words). The page is never opened. Verdict = their average; 50%+ means <b>phishing</b>. <b>Trusted domain</b> = on our known-safe list (e.g. charusat.ac.in), so not flagged.</div>
  <div class="panel">
   <div class="row-in"><input id="url" type="text" placeholder="https://..." autocapitalize="off" autocorrect="off" spellcheck="false"><button class="go" id="scan-btn">Scan</button></div>
   <div class="chips" id="chips"></div>
@@ -88,9 +99,11 @@ footer{padding:28px 20px 48px;text-align:center;font-size:13px;color:#666}
 <section id="results">
  <h2>Measured,<br>not promised.</h2>
  <p class="lead" id="dsinfo"></p>
+ <div class="best">Best model: XGBoost. 89.2% accurate on websites it never saw in training.</div>
  <div class="stats" id="stats"></div>
+ <div class="cap" style="margin-top:14px">Swipe the tables sideways on a phone. Acc = accuracy, Prec = precision, Rec = recall, F1 = balance of both, AUC = ranking quality (1.0 is perfect).</div>
  <div class="tbl"><table id="tbl"></table></div>
- <div class="cap">Strict split: every test link comes from a website the models never saw in training. This is the main result.</div>
+ <div class="cap"><b>Unseen domains</b> = test links come from websites the models never saw in training, so the score is not memorized. Strict split: every test link comes from a website the models never saw in training. This is the main result.</div>
  <div class="tbl"><table id="tbl2"></table></div>
  <div class="cap">Random split, optimistic: the same websites can appear in training and test.</div>
  <div class="tbl"><table id="tbl3"></table></div>
