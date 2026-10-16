@@ -2,9 +2,10 @@
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const defang=u=>u.replace(/^http/i,"hxxp").replace(/\./g,"[.]");
 const FEAT={host_hyphens:v=>v+" hyphen"+(v==1?"":"s")+" in the domain name",susp_tokens:v=>v+" scam-style word"+(v==1?"":"s")+" (login, verify, secure, account...)",is_https:v=>v?null:"does not use HTTPS",path_length:v=>"long path ("+v+" characters)",query_length:v=>"long query string ("+v+" characters)",url_length:v=>"long link ("+v+" characters)",host_length:v=>"long domain name ("+v+" characters)",subdomain_count:v=>v+" subdomain level"+(v==1?"":"s"),has_ip:v=>v?"raw IP address instead of a domain name":null,at_count:v=>v?"contains an @ sign (can hide the real destination)":null,host_digits:v=>v+" digits in the domain name",digit_ratio:v=>"many digits in the link",host_entropy:v=>"random-looking domain name",punycode:v=>v?"punycode (look-alike characters)":null,has_hex_enc:v=>v?"hex-encoded characters (%xx)":null,special_ratio:v=>"many special characters",dot_count:v=>v+" dots in the link",slash_count:v=>v+" slashes (deep path)",longest_token:v=>"very long unbroken word ("+v+" characters)",double_slash_path:v=>v?"extra // inside the path":null,has_port:v=>v?"non-standard port":null,query_params:v=>null};
+const MINV={subdomain_count:2,path_length:30,query_length:30,url_length:75,host_length:30,host_digits:3,dot_count:4,slash_count:5,longest_token:20,host_hyphens:1,susp_tokens:1,digit_ratio:0.25,special_ratio:0.3,host_entropy:3.5};
 function whyFlagged(r){
  const z=r._x.map((v,i)=>(v-M.mean[i])/M.scale[i]);
- const c=z.map((v,i)=>({n:M.features[i],c:v*M.lr.w[i],v:r._x[i]})).filter(o=>o.c>0.35&&FEAT[o.n]).sort((a,b)=>b.c-a.c);
+ const c=z.map((v,i)=>({n:M.features[i],c:v*M.lr.w[i],v:r._x[i]})).filter(o=>o.c>0.35&&FEAT[o.n]&&o.v>=(MINV[o.n]||0)).sort((a,b)=>b.c-a.c);
  const out=[];for(const o of c){const t=FEAT[o.n](o.v);if(t)out.push(t);if(out.length>=4)break}return out;
 }
 function analyze(u){
