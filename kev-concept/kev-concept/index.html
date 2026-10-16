@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2f80e4">
+<title>kev - concept demo (not a live model)</title>
+<style>
+:root{--blue:#2f80e4;--ink:#0a0a0a;--gray:#ececec;--paper:#f7f7f7}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;background:var(--paper);color:var(--ink);letter-spacing:-.01em;-webkit-text-size-adjust:100%}
+.banner{position:sticky;top:0;z-index:5;background:#ffd23f;color:#111;font-weight:800;font-size:15px;text-align:center;padding:12px 14px;line-height:1.25}
+.hero{background:linear-gradient(160deg,#a9c8f2 0%,#5f98dc 38%,#1c4f9c 78%,#0b1f3f 100%);color:#fff;padding:22px 20px 26px}
+.hero .nm{font-weight:800;font-size:clamp(80px,26vw,200px);line-height:.85;letter-spacing:-.06em;margin:6px 0 10px -.03em}
+.hero p{font-size:clamp(19px,3.4vw,28px);font-weight:600;line-height:1.15;margin:0;max-width:16em}
+.wrap{max-width:820px;margin:0 auto;padding:30px 20px 60px}
+.k{color:var(--blue);font-weight:700;font-size:14px;text-transform:uppercase;letter-spacing:.04em;margin:0 0 8px}
+h2{font-size:clamp(30px,6vw,50px);line-height:1;margin:0 0 12px;font-weight:800;letter-spacing:-.04em}
+.lead{font-size:17px;color:#444;line-height:1.45;margin:0 0 20px}
+.picks{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
+@media(min-width:700px){.picks{flex-direction:row;flex-wrap:wrap}.picks button{flex:1 1 45%}}
+.picks button{min-height:56px;text-align:left;border:2px solid var(--ink);background:#fff;border-radius:20px;padding:12px 16px;font:700 16px -apple-system,Helvetica,Arial,sans-serif;color:var(--ink);cursor:pointer;-webkit-appearance:none;touch-action:manipulation}
+.picks button small{display:block;font-weight:500;font-size:13px;color:#555;margin-top:2px}
+.picks button.on{background:var(--ink);color:#fff}.picks button.on small{color:#ccc}
+.chat{background:var(--gray);border-radius:26px;padding:18px;min-height:240px}
+.lab{font-size:12px;font-weight:700;color:#666;text-transform:uppercase;letter-spacing:.05em;margin:0 0 6px}
+.msg{background:#fff;border-radius:20px;padding:14px 16px;font-size:16px;line-height:1.4;margin-bottom:16px;word-break:break-word}
+.kev{background:var(--ink);color:#fff;border-radius:22px;padding:18px;margin-top:6px}
+.kev .v{font-size:clamp(34px,8vw,56px);font-weight:800;letter-spacing:-.05em;line-height:.95;text-transform:lowercase;margin-bottom:8px}
+.kev.safe{background:var(--blue)}
+.kev p{margin:0 0 10px;font-size:16px;line-height:1.4}
+.kev ul{margin:0 0 12px;padding-left:20px;font-size:16px;line-height:1.5}
+.kev .do{border-top:1px solid rgba(255,255,255,.25);padding-top:12px;font-weight:700}
+.empty{color:#666;font-size:16px;padding:30px 4px;text-align:center}
+.road{margin-top:28px;background:#fff;border:2px dashed #999;border-radius:22px;padding:18px}
+.road b{font-size:18px}.road p{margin:8px 0 0;font-size:15px;line-height:1.45;color:#333}
+.foot{margin-top:22px;font-size:14px;color:#555;line-height:1.45}
+</style>
+</head>
+<body>
+<div class="banner">CONCEPT DEMO - NOT A LIVE MODEL. Every reply below is pre-written by hand.</div>
+<div class="hero">
+<div class="nm">kev</div>
+<p>A cybersecurity buddy that could explain scams in plain words.</p>
+</div>
+<div class="wrap">
+<p class="k">Pick a sample</p>
+<h2>See what Kev would say.</h2>
+<p class="lead">Tap a sample message or page. You will see an example of the kind of answer Kev is meant to give. Nothing here is analysed: no model runs, and the answers do not change if you edit anything.</p>
+<div class="picks" id="picks"></div>
+<div class="chat" id="chat"><div class="empty">Tap a sample above.</div></div>
+<div class="road"><b>Roadmap: planned next phase</b><p>Kev is an idea for the next phase of Void. The plan is a small model that runs on your own device, reads message and page text, and explains the risk in simple words, including Hindi and Gujarati. It is not built. Its speed and accuracy have not been measured, so this page shows none.</p></div>
+<p class="foot">What does exist today is Void, the link checker (six models, measured results). This page is only a mock-up of a possible next step.</p>
+</div>
+<script>
+var S=[
+{t:"Fake bank SMS",s:"SMS from unknown number",m:"HDFC Alert: Your account will be blocked today. Update PAN now: http://hdfc-secure-kyc.top/pan",v:"scam",bad:1,r:["It makes you panic: 'blocked today'.","Real banks do not ask for PAN through a link in an SMS.","The link is not the bank's own website address."],d:"Do not tap the link. Open your bank's app yourself, or call the number on your card."},
+{t:"Gujarati KYC message",s:"WhatsApp, ગુજરાતી",m:"તમારું SBI ખાતું આજે બંધ થઈ જશે. KYC અપડેટ કરવા અહીં ક્લિક કરો: http://sbi-kyc-update.xyz",v:"scam",bad:1,r:["Same trick as the SMS: 'your account closes today'.","KYC updates are not done through a link sent on WhatsApp.","The web address ends in .xyz and is not sbi.co.in."],d:"Do not click. Delete it, and report it to the bank if you want."},
+{t:"Hindi prize message",s:"SMS, हिंदी",m:"बधाई हो! आपने ₹5,00,000 जीते हैं। इनाम लेने के लिए अभी अपना OTP भेजें।",v:"scam",bad:1,r:["You cannot win a contest you never entered.","It asks for your OTP. An OTP is a key to your money and nobody honest needs it.","It pushes you to act 'right now'."],d:"Do not reply and never share an OTP."},
+{t:"Fake login page",s:"A web page that looks like PayPal",m:"Page: 'PayPal - Log in to continue'. Address bar: paypal.com.verify-login.xyz. Asks for email, password and card number.",v:"scam",bad:1,r:["The real site name is the part just before the last dot and slash. Here it is verify-login.xyz, not paypal.com.","A login page that also asks for a card number is a red flag.","Looks like PayPal but is not PayPal."],d:"Close the page. If you worry about the account, type the real address yourself."},
+{t:"Safe link",s:"Message from a friend",m:"Here is the reading for tomorrow: https://en.wikipedia.org/wiki/Phishing",v:"looks fine",bad:0,r:["The address is Wikipedia's real website.","There is no panic, no prize and no request for a password or OTP.","Nothing is asking you to hurry."],d:"Seems safe to open. No tool is perfect, so stay careful with anything unexpected."}
+];
+var P=document.getElementById('picks'),C=document.getElementById('chat');
+function esc(x){return x.replace(/&/g,'&amp;').replace(/</g,'&lt;')}
+S.forEach(function(x,i){var b=document.createElement('button');b.innerHTML=esc(x.t)+'<small>'+esc(x.s)+'</small>';b.onclick=function(){show(i)};P.appendChild(b)});
+function show(i){
+ var x=S[i],bs=P.children;for(var j=0;j<bs.length;j++)bs[j].className=j==i?'on':'';
+ C.innerHTML='<p class="lab">The message</p><div class="msg">'+esc(x.m)+'</div><p class="lab">Kev says (example reply)</p><div class="kev '+(x.bad?'':'safe')+'"><div class="v">'+esc(x.v)+'</div><p>Why:</p><ul>'+x.r.map(function(r){return'<li>'+esc(r)+'</li>'}).join('')+'</ul><div class="do">'+esc(x.d)+'</div></div>';
+ C.scrollIntoView&&window.scrollTo(0,C.offsetTop-70);
+}
+</script>
+</body>
+</html>
