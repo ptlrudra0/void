@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#2f80e4">
+<title>void - phishing link detector</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#2f80e4;--deep:#0b1f3f;--ink:#0a0a0a;--gray:#ececec;--paper:#f7f7f7}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter Tight',-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;background:var(--paper);color:var(--ink);letter-spacing:-.01em;-webkit-font-smoothing:antialiased}
+a{color:inherit}
+/* hero */
+.hero{position:relative;overflow:hidden;min-height:clamp(560px,100svh,780px);background:linear-gradient(160deg,#a9c8f2 0%,#5f98dc 38%,#1c4f9c 78%,#0b1f3f 100%);color:#fff;display:flex;flex-direction:column;justify-content:space-between;padding:18px 20px 26px}
+.hero::before,.hero::after{content:"";position:absolute;filter:blur(36px);border-radius:28px;opacity:.9}
+.hero::before{width:62%;height:34%;left:-8%;top:36%;background:rgba(255,255,255,.28);transform:rotate(-8deg)}
+.hero::after{width:55%;height:46%;right:-14%;bottom:-6%;background:rgba(8,24,52,.55);clip-path:polygon(24% 0,100% 0,100% 100%,0 100%);transform:rotate(6deg)}
+.shape{position:absolute;border-radius:26px;background:rgba(255,255,255,.14);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.s1{width:42%;height:22%;left:18%;top:24%}
+.s2{width:34%;height:28%;right:6%;top:46%;clip-path:polygon(0 0,100% 0,100% 100%,38% 100%)}
+nav{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;font-weight:600;font-size:15px}
+nav .dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#fff;margin-right:8px}
+nav a{text-decoration:none;opacity:.9;margin-left:16px;font-weight:500}
+.word{position:relative;z-index:2;font-weight:800;font-size:clamp(120px,44vw,440px);line-height:.8;letter-spacing:-.06em;margin:0 0 0 -.04em;text-transform:lowercase}
+.hero-foot{position:relative;z-index:2;display:flex;flex-direction:column;gap:18px}
+.tag{font-size:clamp(22px,4.4vw,40px);font-weight:600;line-height:1.1;max-width:14em}
+.cta{display:inline-flex;align-self:flex-start;background:#fff;color:var(--ink);border-radius:999px;padding:14px 24px;font-weight:700;text-decoration:none;font-size:16px}
+/* sections */
+section{padding:56px 20px;max-width:1080px;margin:0 auto}
+h2{font-size:clamp(30px,6vw,56px);line-height:1;margin:0 0 14px;font-weight:700;letter-spacing:-.04em}
+.lead{font-size:17px;color:#444;max-width:34em;line-height:1.45;margin:0 0 22px}
+.panel{background:var(--gray);border-radius:26px;padding:22px}
+.row-in{display:flex;flex-direction:column;gap:10px}
+input{width:100%;border:0;border-radius:999px;padding:18px 22px;font:600 17px 'Inter Tight',sans-serif;background:#fff;color:var(--ink);outline:2px solid transparent}
+input:focus{outline-color:var(--blue)}
+button.go{border:0;border-radius:999px;background:var(--ink);color:#fff;padding:18px;font:700 17px 'Inter Tight',sans-serif;cursor:pointer}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.chip{border:1px solid #bdbdbd;background:transparent;border-radius:999px;padding:8px 13px;font:500 13px 'Inter Tight',sans-serif;cursor:pointer;color:#222}
+#out{margin-top:16px;border-radius:22px;padding:22px;background:var(--blue);color:#fff}
+#out.bad{background:#0a0a0a}
+#out.ok{background:var(--blue)}
+.verdict{font-size:clamp(34px,8vw,64px);font-weight:800;letter-spacing:-.05em;line-height:.95;margin-bottom:8px;text-transform:lowercase}
+.vsub{opacity:.85;font-size:14px;margin-bottom:14px;line-height:1.4}
+.mrow{display:flex;align-items:center;gap:10px;font-size:14px;padding:7px 0;border-top:1px solid rgba(255,255,255,.22)}
+.mrow span{flex:0 0 44%}.mrow .bar{flex:1;height:6px;background:rgba(255,255,255,.25);border-radius:3px;overflow:hidden}.mrow .bar i{display:block;height:100%;background:#fff}
+.mrow b{flex:0 0 52px;text-align:right}
+/* stats */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.tile{border-radius:24px;padding:20px;min-height:150px;display:flex;flex-direction:column;justify-content:space-between}
+.tile .big{font-size:clamp(44px,11vw,88px);font-weight:800;letter-spacing:-.06em;line-height:.9}
+.tile small{font-size:13px;opacity:.8;line-height:1.3}
+.t-blue{background:var(--blue);color:#fff}.t-black{background:#0a0a0a;color:#fff}.t-gray{background:var(--gray)}.t-white{background:#fff}
+.tbl{overflow-x:auto;background:#fff;border-radius:24px;padding:12px 14px;margin-bottom:10px}
+table{width:100%;border-collapse:collapse;font-size:13.5px}th,td{padding:9px 4px;text-align:right;border-bottom:1px solid #e4e4e4}th:first-child,td:first-child{text-align:left}th{font-weight:600;color:#666}tr:last-child td{border-bottom:0}
+.best{color:var(--blue);font-weight:800}
+.cap{font-size:13px;color:#555;margin:6px 4px 20px;line-height:1.4}
+.notes{background:#0a0a0a;color:#e8e8e8;border-radius:28px;padding:26px 22px}
+.notes h2{color:#fff;font-size:30px}.notes li{margin-bottom:10px;line-height:1.45;font-size:15px}.notes ul{padding-left:18px;margin:0}
+.notes b{color:#fff}
+footer{padding:28px 20px 48px;text-align:center;font-size:13px;color:#666}
+@media(min-width:760px){.row-in{flex-direction:row}.row-in input{flex:1}.row-in button{width:200px}.stats{grid-template-columns:repeat(4,1fr)}.hero{padding:26px 44px 40px}}
+
+input#url{font-size:17px!important;min-height:52px}.go,.cta,.chip,.chips button{min-height:48px}
+.chips button,.chip{font-size:14px!important;padding:12px 14px!important}
+.vsub{font-size:16px!important;opacity:1!important}.mrow{font-size:16px!important;padding:11px 0!important}
+.tbl{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{font-size:15px!important;min-width:460px}th{font-size:14px;color:#222}td,th{padding:12px 8px!important}
+.cap{font-size:15px!important;color:#333!important}.lead{color:#333!important}.tile small{font-size:15px!important;opacity:1!important}
+.notes li{font-size:16px!important}html,body{overflow-x:hidden}
+.how{background:#fff;border-radius:18px;padding:16px 18px;margin:0 0 16px;font-size:16px;line-height:1.5;color:#111}
+.how b{font-weight:800}.best{font-size:16px;font-weight:700;margin:0 4px 12px;color:#111}
+
+.sig{margin-top:16px;border-top:1px solid rgba(255,255,255,.35);padding-top:12px}
+.sig .sh{font-weight:800;font-size:17px;margin-bottom:6px}
+.srow{padding:9px 0;border-top:1px solid rgba(255,255,255,.18);font-size:16px;line-height:1.45}
+.srow:first-of-type{border-top:0}
+.srow .st{display:block;font-weight:700;font-size:14px;letter-spacing:.04em;text-transform:uppercase;opacity:.85}
+.flag{display:inline-block;background:#fff;color:#0a0a0a;font-weight:800;border-radius:6px;padding:1px 8px;margin-right:6px;font-size:14px}
+#out.sus{background:#1a1a1a}
+.add td:first-child{font-weight:600}
+.limits{background:#fff;border-radius:18px;padding:16px 18px;margin:0 0 16px;font-size:16px;line-height:1.5;color:#111}
+.limits h3{margin:0 0 8px;font-size:20px;letter-spacing:-.02em}.limits li{margin-bottom:8px}.limits ul{padding-left:18px;margin:0}
+</style>
+</head>
+<body>
+<header class="hero">
+ <div class="shape s1"></div><div class="shape s2"></div>
+ <nav><div><span class="dot"></span>void</div><div><a href="#scan">Scan</a><a href="#results">Results</a><a href="#added">New</a><a href="#about">About</a></div></nav>
+ <h1 class="word">void</h1>
+ <div class="hero-foot">
+  <div class="tag">Checking links before you click.</div>
+  <a class="cta" href="#scan">Scan a link</a>
+ </div>
+</header>
+
+<section id="scan">
+ <h2>Paste a link.<br>Get a verdict.</h2>
+ <p class="lead">Six machine-learning models read the link itself and vote, in your browser. Three extra checks run on top: blocklists, look-alike brands and domain age. Only the domain name (never the full link) is sent out, to the public RDAP registry, for the age check.</p>
+ <div class="how"><b>How it works:</b> paste a link. Six models score it from its text only (length, dots, symbols, words). The page is never opened. Verdict = their average; 50%+ means <b>phishing</b>. <b>Trusted domain</b> = on our known-safe list (e.g. charusat.ac.in), so not flagged.</div>
+ <div class="panel">
+  <div class="row-in"><input id="url" type="text" placeholder="https://..." autocapitalize="off" autocorrect="off" spellcheck="false"><button class="go" id="scan-btn">Scan</button></div>
+  <div class="chips" id="chips"></div>
+  <div id="out"></div>
+ </div>
+</section>
+
+<section id="results">
+ <h2>Measured,<br>not promised.</h2>
+ <p class="lead" id="dsinfo"></p>
+ <div class="best">Best model: XGBoost. 89.2% accurate on websites it never saw in training.</div>
+ <div class="stats" id="stats"></div>
+ <div class="cap" style="margin-top:14px">Swipe the tables sideways on a phone. Acc = accuracy, Prec = precision, Rec = recall, F1 = balance of both, AUC = ranking quality (1.0 is perfect).</div>
+ <div class="tbl"><table id="tbl"></table></div>
+ <div class="cap"><b>Unseen domains</b> = test links come from websites the models never saw in training, so the score is not memorized. Strict split: every test link comes from a website the models never saw in training. This is the main result.</div>
+ <div class="tbl"><table id="tbl2"></table></div>
+ <div class="cap">Random split, optimistic: the same websites can appear in training and test.</div>
+ <div class="tbl"><table id="tbl3"></table></div>
+ <div class="cap" id="tbl3n"></div>
+</section>
+
+<section id="added">
+ <h2>New in v3:<br>three extra checks.</h2>
+ <p class="lead">Each one is measured below. None of them changes the six models or their numbers above.</p>
+ <div class="limits"><h3>1. Look-alike brands (rules, works offline)</h3>
+ <p style="margin:0 0 10px">Flags hosts that contain a brand name but are not that brand's real domain (paypal-secure-login.xyz, paypal.com.evil.xyz), typos (paypall.com), swapped characters (paypa1.com) and punycode. Checks 45 brands.</p></div>
+ <div class="cap"><b>Test on 1,000 made-up look-alike links</b> (20 brands x 5 patterns x 10, generated by us, so this is a synthetic test). Share caught as phishing:</div>
+ <div class="tbl"><table><tr><th>Pattern</th><th>Models only</th><th>Models + rule</th></tr>
+ <tr><td>brand-word.xyz</td><td>100.0%</td><td>100.0%</td></tr>
+ <tr><td>brand.com.evil.xyz</td><td>100.0%</td><td>100.0%</td></tr>
+ <tr><td>typo (paypall.com)</td><td>3.0%</td><td class="best">81.0%</td></tr>
+ <tr><td>digit swap (paypa1.com)</td><td>77.5%</td><td class="best">94.5%</td></tr>
+ <tr><td>brand.login.vercel.app</td><td>11.5%</td><td class="best">100.0%</td></tr></table></div>
+ <div class="cap"><b>On real links the gain is small.</b> Only 0.5% of 3,000 held-out PhishTank links and 4.3% of 300 current OpenPhish links imitate a brand in the hostname; the rule caught 2 and 1 extra links the models had missed. Cost: it also flags 0.45% of the top 100,000 sites (for example adobe.net) and 0.31% of our 14,736 legitimate links, which is why a rule-only hit shows as "suspicious", not "phishing".</div>
+ <div class="limits"><h3>2. Blocklists (lookup, not prediction)</h3>
+ <p style="margin:0 0 10px">The live OpenPhish feed is fetched when you open the page. A saved snapshot of 392,090 known phishing domains (Phishing.Database, 16 Oct 2026) is checked too.</p></div>
+ <div class="cap">The snapshot found the host of 492 of 3,000 held-out PhishTank links (16.4%) and 10 of 300 OpenPhish links (3.3%). It wrongly matched 13 of the top 100,000 sites (0.013%) and 4 of 14,736 crawled legitimate links. Lists already feed on PhishTank and OpenPhish, so these hit rates say how much is already reported, not how well it predicts new sites. A list only knows what was reported before.</div>
+ <div class="limits"><h3>3. Domain age (RDAP registry lookup)</h3>
+ <p style="margin:0 0 10px">Looks up when the domain was registered. Shown as information, it does not change the verdict. Sites on shared platforms (vercel.app, weebly.com, blogspot.com...) and raw IP addresses are skipped, because the platform's age says nothing about the page.</p></div>
+ <div class="tbl"><table><tr><th>Sample of domains</th><th>Phishing</th><th>Legit</th></tr>
+ <tr><td>Domains sampled</td><td>220</td><td>220</td></tr>
+ <tr><td>Registry returned a date</td><td>128</td><td>143</td></tr>
+ <tr><td>Under 90 days old</td><td class="best">16.4%</td><td>0.0%</td></tr>
+ <tr><td>Under 1 year old</td><td class="best">43.0%</td><td>2.1%</td></tr>
+ <tr><td>Median age</td><td>2.1 years</td><td>18.7 years</td></tr></table></div>
+ <div class="cap">Percentages are of the domains where the registry returned a date. About 40% of lookups returned nothing (no public registry data or the registry refused), so age is missing for those links. The legit side is popular sites, so it is easier than real life: many honest new sites are young too.</div>
+ <div class="limits"><h3>What is not in v3, and why</h3><ul>
+ <li><b>Page content checks</b> (login forms, hidden forms, logos). The page has to be downloaded first. Browsers block that across sites, and a proxy would send your links to a third party.</li>
+ <li><b>Google Safe Browsing, URLhaus, PhishTank live API.</b> They need a private key or block browser requests.</li>
+ <li><b>Retraining.</b> The six models are unchanged, so every number above the new section is the same as v2.</li></ul></div>
+</section>
+
+<section id="about">
+ <div class="notes">
+  <h2>Read this.</h2>
+  <ul>
+   <li><b>URL only.</b> 29 features from the text of the link: length, dots, hyphens, digits, entropy, @, IP, https, suspicious words. The page itself is never opened.</li>
+   <li><b>Six models.</b> Logistic Regression, Decision Tree, Random Forest, linear SVM, XGBoost and a small neural net, trained with scikit-learn and XGBoost, exported to JavaScript.</li>
+   <li><b>Trusted-domain rule layer</b> on top of the models: exact matches on well-known domains and CHARUSAT sites (charusat.ac.in, charusat.edu.in incl. e-Governance, charusat.online) are not flagged. Lookalikes such as charusat.ac.in.evil.com are not trusted and go through the models. Shared hosts like sites.google.com or github.io are never trusted by this rule.</li>
+   <li><b>Limits.</b> Legitimate links came from popular site homepages, so real-world accuracy can be lower. Some safe links get flagged. Treat this as a student prototype, not a security product.</li>
+   <li><b>Verdict</b> is the average of the six models, cut-off 50%.</li>
+  </ul>
+ </div>
+</section>
+<footer>void &middot; Rudra Patel &amp; Jalaj Mehta &middot; Dept. of AI &amp; ML, CSPIT, CHARUSAT</footer>
+
+<script src="../engine.js"></script>
+<script src="lookalike.js"></script>
+<script src="bloom.js"></script>
+<script>
+let M;
+const pct=x=>(x*100).toFixed(1)+"%";const f3=x=>x.toFixed(3);
+function table(el,res){
+ const cols=["accuracy","precision","recall","f1","roc_auc"],hd=["Model","Acc","Prec","Rec","F1","AUC"];
+ let h="<tr>"+hd.map(x=>"<th>"+x+"</th>").join("")+"</tr>";
+ const mx={};cols.forEach(c=>mx[c]=Math.max(...Object.values(res).map(r=>r[c])));
+ for(const [k,r] of Object.entries(res))h+="<tr><td>"+k+"</td>"+cols.map(c=>"<td"+(r[c]===mx[c]?' class="best"':"")+">"+f3(r[c])+"</td>").join("")+"</tr>";
+ el.innerHTML=h;
+}
+const SHARED=["weebly.com","weeblysite.com","blogspot.com","github.io","vercel.app","pages.dev","netlify.app","web.app","firebaseapp.com","glitch.me","wixsite.com","000webhostapp.com","herokuapp.com","appspot.com","workers.dev","r2.dev","webflow.io","duckdns.org","godaddysites.com","wordpress.com","sites.google.com","typedream.app","framer.app","notion.site","onrender.com","repl.co","netlify.com","myshopify.com","square.site","carrd.co","wuaze.com","serv00.net","blogspot.in"];
+let BL=null,OP=null,OPinfo="not loaded";
+const nurl=x=>x.trim().toLowerCase().replace(/^[a-z]+:\/\//,"").replace(/\/+$/,"");
+function loadLists(){
+ fetch("blocklist_meta.json").then(r=>r.json()).then(async j=>{let b="";for(let i=0;i<j.parts;i++){b+=(await (await fetch("bl"+i+".json")).json()).b64}j.b64=b;BL=bloomLoad(j)}).catch(()=>{BL=null});
+ fetch("https://raw.githubusercontent.com/openphish/public_feed/refs/heads/main/feed.txt").then(r=>{if(!r.ok)throw 0;return r.text()}).then(t=>{const L=t.split("\n").map(x=>x.trim()).filter(Boolean);OP={urls:new Set(L.map(nurl)),hosts:new Set(L.map(hostOf)),n:L.length};OPinfo=L.length+" URLs, fetched just now"}).catch(()=>{OP=null;OPinfo="unavailable (network or blocked)"});
+}
+async function rdapAge(host){
+ const reg=regDomain(host);const ac=new AbortController();const t=setTimeout(()=>ac.abort(),9000);
+ try{const r=await fetch("https://rdap.org/domain/"+encodeURIComponent(reg),{signal:ac.signal,headers:{Accept:"application/rdap+json"}});
+  if(r.status===404)return {err:"no public registration record for "+reg};if(!r.ok)return {err:"lookup failed (HTTP "+r.status+")"};
+  const j=await r.json();const ev=(j.events||[]).find(e=>e.eventAction==="registration");if(!ev)return {err:"registry did not publish a registration date"};
+  const d=new Date(ev.eventDate);return {reg,date:d,days:Math.floor((Date.now()-d)/864e5)}}
+ catch(e){return {err:"lookup unavailable (registry blocked or timed out)"}}finally{clearTimeout(t)}
+}
+function ageText(a){if(a.err)return a.err;const y=a.days/365.25;const when=a.date.toISOString().slice(0,10);
+ const rel=a.days<365?a.days+" days ago":y.toFixed(1)+" years ago";
+ if(a.days<30)return '<span class="flag">NEW</span>'+a.reg+" was registered "+when+" ("+rel+"). Very new domains are a common phishing sign, but plenty of real sites are new too.";
+ if(a.days<90)return '<span class="flag">YOUNG</span>'+a.reg+" was registered "+when+" ("+rel+").";
+ return a.reg+" was registered "+when+" ("+rel+"). An older domain is a mild good sign, not proof: hacked old sites get used for phishing.";}
+function scan(){
+ const u=document.getElementById("url").value.trim();if(!u)return;
+ const r=predict(M,u);const names=Object.keys(r).filter(k=>k[0]!=="_");
+ const avg=names.reduce((s,k)=>s+r[k],0)/names.length;const ph=avg>=0.5;const tr=trusted(u);
+ const host=hostOf(u);const isip=/^(\d{1,3}\.){3}\d{1,3}$/.test(host);
+ const la=tr?null:lookalike(host);
+ const blSnap=!tr&&BL?blocklisted(BL,host):false;const blLive=!tr&&OP?(OP.urls.has(nurl(u))||OP.hosts.has(host)):false;
+ const rows=names.map(k=>'<div class="mrow"><span>'+k+'</span><div class="bar"><i style="width:'+(r[k]*100).toFixed(0)+'%"></i></div><b>'+pct(r[k])+'</b></div>').join("");
+ const o=document.getElementById("out");
+ const bl=(blLive||blSnap)?'<span class="flag">LISTED</span>'+(blLive?"Found in the live OpenPhish feed. ":"")+(blSnap?"Found in the saved Phishing.Database snapshot. ":""):
+   "Not found. Checked the live OpenPhish feed ("+OPinfo+") and a saved snapshot of "+(BL?BL.n.toLocaleString()+" known phishing domains from "+BL.date:"known phishing domains (not loaded)")+". Not being listed does not mean safe: new phishing sites are not on lists yet.";
+ const lk=tr?"Skipped: trusted domain.":la?'<span class="flag">LOOKALIKE</span>'+host+" "+la.why+".":"No brand lookalike found (checked "+Object.keys(BRANDS).length+" popular brands: typos, swapped characters, brand names inside other domains).";
+ const sh=SHARED.find(d=>host===d||host.endsWith("."+d));
+ const ageInit=tr?"Skipped: trusted domain.":isip?"Skipped: this is a raw IP address, which is itself unusual.":sh?"Skipped: hosted on the shared platform "+sh+", whose age says nothing about this page.":"Looking up the registration date...";
+ const sig='<div class="sig"><div class="sh">Extra checks</div><div class="srow"><span class="st">Blocklists</span>'+bl+'</div><div class="srow"><span class="st">Look-alike brand check</span>'+lk+'</div><div class="srow"><span class="st">Domain age (RDAP)</span><span id="s-age">'+ageInit+'</span></div></div>';
+ if(tr){o.className="ok";o.innerHTML='<div class="verdict">trusted domain</div><div class="vsub">'+tr.domain+' - rule layer: '+tr.kind+', not flagged. Model scores below are for reference only (average '+pct(avg)+').</div>'+rows+sig}
+ else if(blLive||blSnap){o.className="bad";o.innerHTML='<div class="verdict">known phishing</div><div class="vsub">This site is on a public phishing list. Model average: '+pct(avg)+'.</div>'+rows+sig}
+ else if(ph){o.className="bad";o.innerHTML='<div class="verdict">phishing</div><div class="vsub">Average phishing probability across the six models: '+pct(avg)+(la?'. Also flagged as a look-alike.':'')+'</div>'+rows+sig}
+ else if(la){o.className="bad sus";o.innerHTML='<div class="verdict">suspicious</div><div class="vsub">The models say '+pct(avg)+' (below the 50% cut-off), but the address imitates a known brand. Do not log in.</div>'+rows+sig}
+ else{o.className="ok";o.innerHTML='<div class="verdict">looks safe</div><div class="vsub">Average phishing probability across the six models: '+pct(avg)+'. No list or look-alike match.</div>'+rows+sig}
+ if(!tr&&!isip&&!sh){const id=++scan.n;rdapAge(host).then(a=>{if(id!==scan.n)return;const el=document.getElementById("s-age");if(el)el.innerHTML=ageText(a)})}
+}
+scan.n=0;loadLists();
+fetch("../model.json").then(r=>r.json()).then(m=>{
+ M=m;const R=m.results,X=R.results.domain.metrics.XGBoost;
+ document.getElementById("dsinfo").textContent=R.n_dedup.toLocaleString()+" unique links: "+R.n_phish.toLocaleString()+" verified phishing from PhishTank, "+R.n_legit.toLocaleString()+" legitimate links crawled from top sites. 80/20 split, tested on unseen domains.";
+ document.getElementById("stats").innerHTML='<div class="tile t-blue"><div class="big">'+(X.accuracy*100).toFixed(1)+'%</div><small>XGBoost accuracy, unseen domains</small></div><div class="tile t-black"><div class="big">'+X.roc_auc.toFixed(3)+'</div><small>XGBoost AUC</small></div><div class="tile t-gray"><div class="big">6</div><small>models trained and exported to the browser</small></div><div class="tile t-white"><div class="big">'+(R.n_dedup/1000).toFixed(1)+'k</div><small>unique links in the dataset</small></div>';
+ table(document.getElementById("tbl"),R.results.domain.metrics);table(document.getElementById("tbl2"),R.results.random.metrics);
+ const a=R.heldout_phishtank_unseen.recall,b=R.openphish_unseen.recall;
+ document.getElementById("tbl3").innerHTML="<tr><th>Unseen phishing caught</th><th>PhishTank (n="+R.heldout_phishtank_unseen.n+")</th><th>OpenPhish (n="+R.openphish_unseen.n+")</th></tr>"+Object.keys(a).map(k=>"<tr><td>"+k+"</td><td>"+pct(a[k])+"</td><td>"+pct(b[k])+"</td></tr>").join("");
+ document.getElementById("tbl3n").textContent="Share of phishing links correctly flagged (recall). PhishTank links were held out from training; OpenPhish is a separate feed.";
+ const ex=["https://support.charusat.edu.in/egov/home.aspx","https://www.wikipedia.org/wiki/Phishing","http://paypal.com.verify-login.account-update.top/signin","http://192.168.4.5/secure/login.php?user=1","https://docs.python.org/3/library/re.html"];
+ const c=document.getElementById("chips");ex.forEach(e=>{const b=document.createElement("button");b.className="chip";b.textContent=e.replace(/^https?:\/\//,"").slice(0,30)+(e.length>38?"...":"");b.onclick=()=>{document.getElementById("url").value=e;scan()};c.appendChild(b)});
+ document.getElementById("url").value=ex[2];scan();
+});
+document.getElementById("scan-btn").onclick=scan;
+document.getElementById("url").addEventListener("keydown",e=>{if(e.key==="Enter")scan()});
+</script>
+</body>
+</html>
