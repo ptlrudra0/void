@@ -71,7 +71,7 @@ fetch("model.json").then(r=>r.json()).then(m=>{
  const rec=(a,b)=>Object.keys(a).map(k=>"<tr><td>"+k+"</td><td>"+pct(a[k])+"</td><td>"+pct(b[k])+"</td></tr>").join("");
  document.getElementById("tbl3").innerHTML="<tr><th>Model</th><th>PhishTank (n="+R.heldout_phishtank_unseen.n+")</th><th>OpenPhish (n="+R.openphish_unseen.n+")</th></tr>"+rec(R.heldout_phishtank_unseen.recall,R.openphish_unseen.recall);
  document.getElementById("tbl3n").textContent="Share of unseen phishing URLs correctly flagged (recall). PhishTank URLs were held out from training; OpenPhish is a separate feed.";
- const ex=["https://www.wikipedia.org/wiki/Phishing","http://paypal.com.verify-login.account-update.top/signin","http://192.168.4.5/secure/login.php?user=1","https://github.com/ptlrudra0"];
+ const ex=["https://www.wikipedia.org/wiki/Phishing","http://paypal.com.verify-login.account-update.top/signin","http://192.168.4.5/secure/login.php?user=1","https://docs.python.org/3/library/re.html"];
  const c=document.getElementById("chips");ex.forEach(e=>{const b=document.createElement("button");b.className="chip";b.textContent=e.length>34?e.slice(0,32)+"...":e;b.onclick=()=>{document.getElementById("url").value=e;scan()};c.appendChild(b)});
  document.getElementById("url").value=ex[1];scan();
 });
