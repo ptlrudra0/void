@@ -1,25 +1,82 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="theme-color" content="#0f172a">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Void</title>
-  <style>
-    body { max-width: 420px; margin: 0 auto; padding: 16px; font-family: -apple-system, BlinkMacSystemFont, Inter, sans-serif; background: #0f172a; color: #f8fafc; }
-    .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 12px; margin-bottom: 12px; }
-    input { width: 100%; box-sizing: border-box; padding: 8px 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: #fff; margin-bottom: 8px; font-size: 12px; }
-    button { width: 100%; padding: 8px; border-radius: 8px; border: none; background: #2563eb; color: #fff; font-weight: 600; cursor: pointer; }
-    .row { display: flex; justify-content: space-between; font-size: 12px; padding: 4px 0; border-bottom: 1px solid #334155; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f172a">
+<title>Void - Phishing URL Detector</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:16px;font-family:-apple-system,BlinkMacSystemFont,Inter,sans-serif;background:#0f172a;color:#f8fafc;max-width:720px;margin:0 auto}
+h1{font-size:22px;margin:4px 0 2px}h2{font-size:15px;margin:0 0 8px}
+.sub{color:#94a3b8;font-size:13px;margin-bottom:14px}
+.card{background:#1e293b;border:1px solid #334155;border-radius:12px;padding:12px;margin-bottom:12px}
+input{width:100%;padding:10px;border-radius:8px;border:1px solid #475569;background:#0f172a;color:#fff;margin-bottom:8px;font-size:16px}
+button{width:100%;padding:10px;border-radius:8px;border:none;background:#2563eb;color:#fff;font-weight:600;font-size:15px;cursor:pointer}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.chip{width:auto;padding:5px 9px;font-size:12px;background:#334155;font-weight:500}
+.row{display:flex;justify-content:space-between;font-size:13px;padding:5px 0;border-bottom:1px solid #334155}
+.v{font-weight:700;font-size:17px;margin-bottom:6px}
+table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:5px 3px;text-align:right;border-bottom:1px solid #334155}th:first-child,td:first-child{text-align:left}
+.note{font-size:12px;color:#cbd5e1;line-height:1.5}.note li{margin-bottom:4px}
+.best{color:#34d399;font-weight:700}
+.wrap{overflow-x:auto}
+</style>
 </head>
 <body>
-  <h3 style="margin:0 0 10px 0;font-size:15px;">Void</h3>
-  <div class="card">
-    <input id="url-input" type="text" placeholder="Paste or inspect URL..." />
-    <button id="scan-btn">Scan with 6 Models + Kev-0.8B</button>
-  </div>
-  <div id="result-box" class="card"></div>
-  <script src="popup.js"></script>
+<h1>Void</h1>
+<div class="sub">Phishing URL detector. 6 machine-learning models trained on URL features only. Everything runs in your browser.</div>
+<div class="card">
+<input id="url" type="text" placeholder="Paste a URL..." autocapitalize="off" autocorrect="off" spellcheck="false">
+<button id="scan">Scan URL</button>
+<div class="chips" id="chips"></div>
+</div>
+<div id="out" class="card"></div>
+<div class="card"><h2>Measured results (held-out test set)</h2><div class="sub" id="dsinfo"></div>
+<div class="wrap"><table id="tbl"></table></div>
+<div class="sub" style="margin-top:8px">Strict split: test URLs come from domains never seen in training. This is the main result.</div>
+<div class="wrap"><table id="tbl2"></table></div>
+<div class="sub" style="margin-top:8px">Random split (same domains can appear in train and test, so it is optimistic).</div>
+</div>
+<div class="card"><h2>Extra check on unseen phishing</h2><div class="wrap"><table id="tbl3"></table></div><div class="sub" id="tbl3n" style="margin-top:6px"></div></div>
+<div class="card note"><h2>Read this</h2><ul>
+<li>Models use only the text of the URL (29 features such as length, dots, hyphens, digits, entropy, @, IP, https, suspicious words). They do not open the page.</li>
+<li>The legitimate URLs are links collected from the homepages of popular sites (Tranco list), so the data is not a perfect picture of the real web. Real-world accuracy can be lower.</li>
+<li>Models: Logistic Regression, Decision Tree, Random Forest, linear SVM, XGBoost, small neural net (MLP). All trained with scikit-learn / XGBoost and exported to run in JavaScript.</li>
+<li>The verdict above is the average probability of the 6 models (50% cut-off). Treat it as a demo, not a security product.</li>
+</ul></div>
+<script src="engine.js"></script>
+<script>
+let M;
+const pct=x=>(x*100).toFixed(1)+"%";
+const f3=x=>x.toFixed(3);
+function table(el,res,best){
+ const cols=["accuracy","precision","recall","f1","roc_auc"],hd=["Model","Acc","Prec","Rec","F1","AUC"];
+ let h="<tr>"+hd.map(x=>"<th>"+x+"</th>").join("")+"</tr>";
+ const mx={};cols.forEach(c=>mx[c]=Math.max(...Object.values(res).map(r=>r[c])));
+ for(const [k,r] of Object.entries(res))h+="<tr><td>"+k+"</td>"+cols.map(c=>"<td"+(r[c]===mx[c]?' class="best"':"")+">"+f3(r[c])+"</td>").join("")+"</tr>";
+ el.innerHTML=h;
+}
+function scan(){
+ const u=document.getElementById("url").value.trim();if(!u)return;
+ const r=predict(M,u);const names=Object.keys(r).filter(k=>k[0]!=="_");
+ const avg=names.reduce((s,k)=>s+r[k],0)/names.length;
+ const ph=avg>=0.5;
+ document.getElementById("out").innerHTML='<div class="v" style="color:'+(ph?"#f87171":"#34d399")+'">'+(ph?"PHISHING":"LOOKS SAFE")+' ('+pct(avg)+' average phishing probability)</div>'+names.map(k=>'<div class="row"><span>'+k+'</span><strong>'+pct(r[k])+'</strong></div>').join("");
+}
+fetch("model.json").then(r=>r.json()).then(m=>{
+ M=m;const R=m.results;
+ document.getElementById("dsinfo").textContent="Dataset: "+R.n_dedup.toLocaleString()+" unique URLs ("+R.n_phish.toLocaleString()+" phishing from PhishTank, "+R.n_legit.toLocaleString()+" legitimate links crawled from Tranco top sites). 80/20 split.";
+ table(document.getElementById("tbl"),R.results.domain.metrics);
+ table(document.getElementById("tbl2"),R.results.random.metrics);
+ const rec=(a,b)=>Object.keys(a).map(k=>"<tr><td>"+k+"</td><td>"+pct(a[k])+"</td><td>"+pct(b[k])+"</td></tr>").join("");
+ document.getElementById("tbl3").innerHTML="<tr><th>Model</th><th>PhishTank (n="+R.heldout_phishtank_unseen.n+")</th><th>OpenPhish (n="+R.openphish_unseen.n+")</th></tr>"+rec(R.heldout_phishtank_unseen.recall,R.openphish_unseen.recall);
+ document.getElementById("tbl3n").textContent="Share of unseen phishing URLs correctly flagged (recall). PhishTank URLs were held out from training; OpenPhish is a separate feed.";
+ const ex=["https://www.wikipedia.org/wiki/Phishing","http://paypal.com.verify-login.account-update.top/signin","http://192.168.4.5/secure/login.php?user=1","https://github.com/ptlrudra0"];
+ const c=document.getElementById("chips");ex.forEach(e=>{const b=document.createElement("button");b.className="chip";b.textContent=e.length>34?e.slice(0,32)+"...":e;b.onclick=()=>{document.getElementById("url").value=e;scan()};c.appendChild(b)});
+ document.getElementById("url").value=ex[1];scan();
+});
+document.getElementById("scan").onclick=scan;
+document.getElementById("url").addEventListener("keydown",e=>{if(e.key==="Enter")scan()});
+</script>
 </body>
 </html>
