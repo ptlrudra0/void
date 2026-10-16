@@ -113,7 +113,7 @@ button,.cta,.chip{touch-action:manipulation;-webkit-tap-highlight-color:transpar
 *{animation:none!important;transition:none!important}
 .chips button,.chip{min-height:44px}.go{min-height:52px}
 @media(min-width:700px) and (max-width:1100px){section.view{padding:32px 32px 64px}.tabs button{min-height:48px;font-size:17px}.tbl{overflow-x:visible}table{min-width:0!important}.lead{font-size:19px}.word{font-size:clamp(100px,18vw,190px)!important}}
-</style>
+.rep .cap{color:#ddd!important}.panel+.lead{margin-top:22px}</style>
 </head>
 <body>
 <header class="hero">
@@ -129,14 +129,14 @@ button,.cta,.chip{touch-action:manipulation;-webkit-tap-highlight-color:transpar
 <section id="scan" class="view">
  <div class="purpose">Check one link</div>
  <h2>Paste a link.<br>Get a verdict.</h2>
- <p class="lead">Six machine-learning models read the link itself and vote, in your browser. Three extra checks run on top: blocklists, look-alike brands and domain age. Only the domain name (never the full link) is sent out, to the public RDAP registry, for the age check.</p>
- <div class="how"><b>How it works:</b> paste a link. Six models score it from its text only (length, dots, symbols, words). The page is never opened. Verdict = their average; 50%+ means <b>phishing</b>. <b>Trusted domain</b> = on our known-safe list (e.g. charusat.ac.in), so not flagged.</div>
  <div class="panel">
   <div class="row-in"><input id="url" type="text" placeholder="https://..." autocapitalize="off" autocorrect="off" spellcheck="false"><button class="go" id="scan-btn">Scan</button></div>
   <div class="chips" id="chips"></div>
   <div id="out"></div>
  </div>
-</section>
+<p class="lead">Six machine-learning models read the link itself and vote, in your browser. Three extra checks run on top: blocklists, look-alike brands and domain age. Only the domain name (never the full link) is sent out, to the public RDAP registry, for the age check.</p>
+ <div class="how"><b>How it works:</b> paste a link. Six models score it from its text only (length, dots, symbols, words). The page is never opened. Verdict = their average; 50%+ means <b>phishing</b>. <b>Trusted domain</b> = on our known-safe list (e.g. charusat.ac.in), so not flagged.</div>
+ </section>
 
 <section id="triage" class="view">
  <div class="purpose">Check a whole email or a list of links</div>
@@ -200,7 +200,7 @@ button,.cta,.chip{touch-action:manipulation;-webkit-tap-highlight-color:transpar
  <tr><td>Under 1 year old</td><td class="best">43.0%</td><td>2.1%</td></tr>
  <tr><td>Median age</td><td>2.1 years</td><td>18.7 years</td></tr></table></div>
  <div class="cap">Percentages are of the domains where the registry returned a date. About 40% of lookups returned nothing (no public registry data or the registry refused), so age is missing for those links. The legit side is popular sites, so it is easier than real life: many honest new sites are young too.</div>
- <div class="limits"><h3>What is not in v3, and why</h3><ul>
+ <div class="limits"><h3>What is not included, and why</h3><ul>
  <li><b>Page content checks</b> (login forms, hidden forms, logos). The page has to be downloaded first. Browsers block that across sites, and a proxy would send your links to a third party.</li>
  <li><b>Google Safe Browsing, URLhaus, PhishTank live API.</b> They need a private key or block browser requests.</li>
  <li><b>Retraining.</b> The six models are unchanged, so every number above the new section is the same as v2.</li></ul></div>
