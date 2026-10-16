@@ -42,6 +42,7 @@ table{width:100%;border-collapse:collapse;font-size:12px}th,td{padding:5px 3px;t
 <li>Models use only the text of the URL (29 features such as length, dots, hyphens, digits, entropy, @, IP, https, suspicious words). They do not open the page.</li>
 <li>The legitimate URLs are links collected from the homepages of popular sites (Tranco list), so the data is not a perfect picture of the real web. Real-world accuracy can be lower.</li>
 <li>Models: Logistic Regression, Decision Tree, Random Forest, linear SVM, XGBoost, small neural net (MLP). All trained with scikit-learn / XGBoost and exported to run in JavaScript.</li>
+<li>Trusted-domain rule layer (on top of the ML models): exact matches on a short list of well-known domains and CHARUSAT sites (charusat.ac.in, charusat.edu.in incl. e-Governance, charusat.online) are not flagged. Lookalikes such as charusat.ac.in.evil.com or charusat.ac.in@evil.com are not trusted and go through the ML models. Shared hosts like sites.google.com or github.io are never trusted by this rule.</li>
 <li>The verdict above is the average probability of the 6 models (50% cut-off). Treat it as a demo, not a security product.</li>
 </ul></div>
 <script src="engine.js"></script>
@@ -60,8 +61,9 @@ function scan(){
  const u=document.getElementById("url").value.trim();if(!u)return;
  const r=predict(M,u);const names=Object.keys(r).filter(k=>k[0]!=="_");
  const avg=names.reduce((s,k)=>s+r[k],0)/names.length;
- const ph=avg>=0.5;
- document.getElementById("out").innerHTML='<div class="v" style="color:'+(ph?"#f87171":"#34d399")+'">'+(ph?"PHISHING":"LOOKS SAFE")+' ('+pct(avg)+' average phishing probability)</div>'+names.map(k=>'<div class="row"><span>'+k+'</span><strong>'+pct(r[k])+'</strong></div>').join("");
+ const ph=avg>=0.5;const tr=trusted(u);
+ const head=tr?'<div class="v" style="color:#34d399">TRUSTED DOMAIN ('+tr.domain+')</div><div class="sub">Rule layer: '+tr.kind+', not flagged. The ML models below are shown for reference only (average '+pct(avg)+').</div>':null;
+ document.getElementById("out").innerHTML=head?head+names.map(k=>'<div class="row"><span>'+k+'</span><strong>'+pct(r[k])+'</strong></div>').join(""):'<div class="v" style="color:'+(ph?"#f87171":"#34d399")+'">'+(ph?"PHISHING":"LOOKS SAFE")+' ('+pct(avg)+' average phishing probability)</div>'+names.map(k=>'<div class="row"><span>'+k+'</span><strong>'+pct(r[k])+'</strong></div>').join("");
 }
 fetch("model.json").then(r=>r.json()).then(m=>{
  M=m;const R=m.results;
@@ -71,7 +73,7 @@ fetch("model.json").then(r=>r.json()).then(m=>{
  const rec=(a,b)=>Object.keys(a).map(k=>"<tr><td>"+k+"</td><td>"+pct(a[k])+"</td><td>"+pct(b[k])+"</td></tr>").join("");
  document.getElementById("tbl3").innerHTML="<tr><th>Model</th><th>PhishTank (n="+R.heldout_phishtank_unseen.n+")</th><th>OpenPhish (n="+R.openphish_unseen.n+")</th></tr>"+rec(R.heldout_phishtank_unseen.recall,R.openphish_unseen.recall);
  document.getElementById("tbl3n").textContent="Share of unseen phishing URLs correctly flagged (recall). PhishTank URLs were held out from training; OpenPhish is a separate feed.";
- const ex=["https://www.wikipedia.org/wiki/Phishing","http://paypal.com.verify-login.account-update.top/signin","http://192.168.4.5/secure/login.php?user=1","https://docs.python.org/3/library/re.html"];
+ const ex=["https://support.charusat.edu.in/egov/home.aspx","https://www.wikipedia.org/wiki/Phishing","http://paypal.com.verify-login.account-update.top/signin","http://192.168.4.5/secure/login.php?user=1","https://docs.python.org/3/library/re.html"];
  const c=document.getElementById("chips");ex.forEach(e=>{const b=document.createElement("button");b.className="chip";b.textContent=e.length>34?e.slice(0,32)+"...":e;b.onclick=()=>{document.getElementById("url").value=e;scan()};c.appendChild(b)});
  document.getElementById("url").value=ex[1];scan();
 });
